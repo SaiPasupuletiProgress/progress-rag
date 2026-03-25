@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual env
+
+venv/
+.env
+
+# Logs
+*.log
+
+# Vector DB (RAG)
+chroma_db/
+chroma_articles/
+faiss_index/
+embeddings/
+
+# OS / misc
+.DS_Store
+
+# Large files
+*.exe
