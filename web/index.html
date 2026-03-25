@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Progress Knowledge Base</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=Bebas+Neue&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #05080f;
+    --surface:   #0a0f1e;
+    --surface2:  #0f1628;
+    --border:    #1a2540;
+    --border2:   #243050;
+    --accent:    #00c8ff;
+    --accent2:   #0055ff;
+    --green:     #00e878;
+    --orange:    #ff6b35;
+    --text:      #b8cce0;
+    --muted:     #3a5070;
+    --white:     #ddeeff;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .main {
+    flex: 1;
+  }
+
+  /* GRID BACKGROUND */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,200,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,200,255,0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 900px 600px at 10% 0%, rgba(0,85,255,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 700px 500px at 90% 100%, rgba(0,200,255,0.05) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* HEADER */
+  header {
+    position: relative;
+    z-index: 10;
+    border-bottom: 1px solid var(--border);
+    background: rgba(5,8,15,0.9);
+    backdrop-filter: blur(20px);
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .logo-full-img {
+    height: 38px;
+    width: 38px;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+
+  .logo-divider {
+    width: 1px;
+    height: 32px;
+    background: var(--border2);
+    flex-shrink: 0;
+  }
+
+  .logo-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 2px;
+    color: var(--white);
+  }
+
+  .logo-sub {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .header-stats {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+  }
+
+  .stat {
+    text-align: right;
+  }
+
+  .stat-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* MAIN LAYOUT */
+  .main {
+    position: relative;
+    z-index: 1;
+    max-width: 100%;
+    margin: 0;
+    padding: 32px 40px;
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 28px;
+    align-items: start;
+    flex: 1;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    position: sticky;
+    top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .panel-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .panel-header::before {
+    content: '';
+    width: 3px;
+    height: 12px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  .panel-body { padding: 16px; }
+
+  /* CONTROLS */
+  .control-group {
+    margin-bottom: 16px;
+  }
+
+  .control-group:last-child { margin-bottom: 0; }
+
+  label {
+    display: block;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  select, input[type="range"] {
+    width: 100%;
+  }
+
+  select {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 4px;
+    color: var(--white);
+    padding: 8px 10px;
+    font-size: 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%233a5070'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 28px;
+  }
+
+  select:focus { border-color: var(--accent); }
+
+  input[type="range"] {
+    -webkit-appearance: none;
+    height: 3px;
+    background: var(--border2);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+    margin-top: 4px;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    box-shadow: 0 0 6px rgba(0,200,255,0.4);
+  }
+
+  .range-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    float: right;
+    margin-top: -18px;
+  }
+
+  /* CONTENT AREA */
+  .content { display: flex; flex-direction: column; gap: 20px; }
+
+  /* SEARCH BOX */
+  .search-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 28px 32px;
+    position: relative;
+    transition: border-color 0.3s;
+  }
+
+  .search-panel:focus-within {
+    border-color: rgba(0,200,255,0.3);
+    box-shadow: 0 0 40px rgba(0,200,255,0.05);
+  }
+
+  .search-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .search-label::before {
+    content: '';
+    width: 3px;
+    height: 12px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  .search-input-wrap {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+  }
+
+  textarea {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    color: var(--white);
+    padding: 16px 18px;
+    font-size: 16px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    resize: none;
+    outline: none;
+    min-height: 72px;
+    max-height: 160px;
+    line-height: 1.6;
+    transition: border-color 0.2s;
+  }
+
+  textarea::placeholder { color: var(--muted); }
+  textarea:focus { border-color: rgba(0,200,255,0.4); }
+
+  .ask-btn {
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    border: none;
+    border-radius: 8px;
+    color: white;
+    padding: 16px 36px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.2s, transform 0.1s;
+    height: 58px;
+  }
+
+  .ask-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+  .ask-btn:active { transform: translateY(0); }
+  .ask-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  /* ANSWER PANEL */
+  .answer-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    display: none;
+    animation: slideUp 0.3s ease;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .answer-panel.visible { display: block; }
+
+  .answer-toolbar {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .answer-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .answer-title::before {
+    content: '';
+    width: 3px;
+    height: 12px;
+    background: var(--green);
+    border-radius: 2px;
+  }
+
+  .elapsed {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .answer-body {
+    padding: 28px 32px;
+    font-size: 15px;
+    line-height: 1.9;
+    color: var(--text);
+    min-height: 200px;
+  }
+
+  .answer-body p { margin-bottom: 12px; }
+  .answer-body p:last-child { margin-bottom: 0; }
+
+  .answer-body strong { color: var(--white); }
+
+  .answer-body code {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 3px;
+    padding: 2px 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+  }
+
+  .answer-body pre {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    padding: 16px;
+    overflow-x: auto;
+    margin: 12px 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    line-height: 1.6;
+  }
+
+  .answer-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 13px;
+  }
+
+  .answer-body th {
+    background: var(--surface2);
+    padding: 8px 12px;
+    text-align: left;
+    color: var(--white);
+    font-weight: 500;
+    border: 1px solid var(--border2);
+  }
+
+  .answer-body td {
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  .answer-body tr:hover td { background: rgba(0,200,255,0.03); }
+
+  .cursor {
+    display: inline-block;
+    width: 2px;
+    height: 16px;
+    background: var(--accent);
+    margin-left: 2px;
+    vertical-align: middle;
+    animation: blink 0.8s infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  /* SOURCES */
+  .sources-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    display: none;
+    animation: slideUp 0.3s ease 0.1s both;
+  }
+
+  .sources-panel.visible { display: block; }
+
+  .sources-list {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .source-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    text-decoration: none;
+    transition: border-color 0.2s, background 0.2s;
+    cursor: pointer;
+  }
+
+  .source-item:hover {
+    border-color: rgba(0,200,255,0.3);
+    background: rgba(0,200,255,0.03);
+  }
+
+  .source-id {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .source-title {
+    font-size: 13px;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .source-arrow {
+    margin-left: auto;
+    color: var(--muted);
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+
+  /* TRACE PANEL */
+  .trace-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    display: none;
+  }
+
+  .trace-panel.visible { display: block; }
+
+  .trace-toggle {
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s;
+  }
+
+  .trace-toggle.open { border-bottom-color: var(--border); }
+
+  .trace-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .trace-title::before {
+    content: '';
+    width: 3px;
+    height: 12px;
+    background: var(--orange);
+    border-radius: 2px;
+  }
+
+  .trace-chevron {
+    color: var(--muted);
+    font-size: 12px;
+    transition: transform 0.2s;
+  }
+
+  .trace-chevron.open { transform: rotate(180deg); }
+
+  .trace-body {
+    display: none;
+    padding: 16px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.8;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .trace-body.open { display: block; }
+  .trace-line { padding: 2px 0; }
+  .trace-line.highlight { color: var(--accent); }
+
+  /* LOADING STATE */
+  .loading-bar {
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent2), var(--accent), var(--accent2));
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    display: none;
+  }
+
+  .loading-bar.visible { display: block; }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  .step-indicator {
+    padding: 10px 20px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    display: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .step-indicator.visible { display: block; }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 60px 40px;
+    color: var(--muted);
+  }
+
+  .empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.4;
+  }
+
+  .empty-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: var(--border2);
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+
+  .empty-sub {
+    font-size: 13px;
+    color: var(--muted);
+    max-width: 300px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* ERROR */
+  .error-box {
+    padding: 16px 20px;
+    background: rgba(255,107,53,0.08);
+    border: 1px solid rgba(255,107,53,0.2);
+    border-radius: 6px;
+    color: var(--orange);
+    font-size: 13px;
+    font-family: 'IBM Plex Mono', monospace;
+    display: none;
+    margin: 16px 24px;
+  }
+
+  .error-box.visible { display: block; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+  /* RESPONSIVE */
+  /* Logo as link */
+  a.logo {
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  a.logo:hover .logo-full-img {
+    opacity: 0.85;
+    transition: opacity 0.2s;
+  }
+
+  /* Header nav links */
+  .header-nav {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-right: 20px;
+  }
+
+  .header-nav a {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 5px 10px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+    white-space: nowrap;
+  }
+
+  .header-nav a:hover {
+    color: var(--accent);
+    border-color: rgba(0,200,255,0.3);
+    background: rgba(0,200,255,0.04);
+  }
+
+  .header-nav a .nav-icon {
+    margin-right: 4px;
+    font-size: 11px;
+  }
+
+  /* Footer */
+  .site-footer {
+    position: relative;
+    z-index: 10;
+    border-top: 2px solid var(--border2);
+    background: linear-gradient(135deg, #070d1e 0%, #0a1628 50%, #070d1e 100%);
+    padding: 22px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .footer-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .footer-copy {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: #6a8aaa;
+    letter-spacing: 1px;
+  }
+
+  .footer-links {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .footer-links a {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #8ab0d0;
+    text-decoration: none;
+    padding: 8px 16px;
+    border: 1px solid rgba(0,200,255,0.2);
+    border-radius: 6px;
+    transition: all 0.2s;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(0,200,255,0.04);
+  }
+
+  .footer-links a:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: rgba(0,200,255,0.1);
+    box-shadow: 0 0 12px rgba(0,200,255,0.15);
+    transform: translateY(-1px);
+  }
+
+  .footer-links a svg {
+    flex-shrink: 0;
+    stroke: currentColor;
+  }
+
+  .footer-sep {
+    width: 1px;
+    height: 20px;
+    background: rgba(0,200,255,0.15);
+    margin: 0 2px;
+  }
+
+  @media (max-width: 900px) {
+    .header-nav { display: none; }
+    .site-footer { flex-direction: column; gap: 12px; padding: 16px; text-align: center; }
+    .footer-links { flex-wrap: wrap; justify-content: center; }
+    .main { grid-template-columns: 1fr; padding: 24px 16px; }
+    .sidebar { position: static; }
+    .header-stats { display: none; }
+    header { padding: 0 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+    <a class="logo" href="https://www.progress.com/" target="_blank" rel="noopener" title="Progress Software">
+    <img class="logo-full-img" src="data:image/png;base64,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" alt="Progress">
+    <div class="logo-divider"></div>
+    <div>
+      <div class="logo-text">Progress Knowledge Base</div>
+      <div class="logo-sub">All Knowledge In One Place</div>
+    </div>
+  </a>
+  <div class="header-nav">
+    <a href="https://community.progress.com/s/" target="_blank" rel="noopener">
+      <span class="nav-icon">&#127757;</span>Community
+    </a>
+    <a href="https://www.progress.com/support" target="_blank" rel="noopener">
+      <span class="nav-icon">&#128241;</span>Support
+    </a>
+  </div>
+  <div class="header-stats">
+    <div class="stat">
+      <div class="stat-value" id="stat-chunks">—</div>
+      <div class="stat-label">Chunks</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value" id="stat-articles">—</div>
+      <div class="stat-label">Articles</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value" id="stat-groups">—</div>
+      <div class="stat-label">Products</div>
+    </div>
+    <div class="status-dot" title="System Online"></div>
+  </div>
+</header>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <div class="panel">
+      <div class="panel-header">Configuration</div>
+      <div class="panel-body">
+
+        <div class="control-group">
+          <label>Product Group</label>
+          <select id="product-group">
+            <option value="All Products">All Products</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label>LLM Model</label>
+          <select id="model-name">
+            <optgroup label="🏠 Local LLM (Free — No API cost - HIGH Latency)">
+              <option value="qwen2.5-7b-instruct-q4.gguf">Qwen 2.5 7B Instruct (Local — CPU ~2min - Recommended)</option>
+              <option value="deepseek-r1-7b-q4.gguf">DeepSeek R1 7B (Local — CPU ~3 to ~5min)</option>
+            </optgroup>
+            <optgroup label="☁️ Cloud LLM (OpenRouter - Low Latency)">
+              <option value="arcee-ai/trinity-large-preview:free" selected>Arcee Trinity (Free) ~30sec</option>
+              <option value="nousresearch/hermes-3-llama-3.1-405b:free" selected>hermes-3-llama-3.1-405b:free ~30sec</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label>Temperature</label>
+          <input type="range" id="temperature" min="0" max="1" step="0.1" value="0">
+          <div class="range-value" id="temperature-val">0.0</div>
+          <br>
+        </div>
+
+        <div class="control-group">
+          <label>Max Tokens</label>
+          <input type="range" id="max-tokens" min="200" max="4000" step="100" value="1500">
+          <div class="range-value" id="max-tokens-val">1500</div>
+          <br>
+        </div>
+
+        <div class="control-group">
+          <label>Reranker Limit</label>
+          <input type="range" id="rerank-limit" min="5" max="25" step="1" value="15">
+          <div class="range-value" id="rerank-limit-val">15</div>
+          <br>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">System</div>
+      <div class="panel-body">
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:11px; color:var(--muted); font-family:'IBM Plex Mono',monospace;">STATUS</span>
+            <span style="font-size:11px; color:var(--green); font-family:'IBM Plex Mono',monospace;" id="sys-status">ONLINE</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:11px; color:var(--muted); font-family:'IBM Plex Mono',monospace;">CHUNKS</span>
+            <span style="font-size:11px; color:var(--accent); font-family:'IBM Plex Mono',monospace;" id="sys-chunks">—</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:11px; color:var(--muted); font-family:'IBM Plex Mono',monospace;">ARTICLES</span>
+            <span style="font-size:11px; color:var(--accent); font-family:'IBM Plex Mono',monospace;" id="sys-articles">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- SEARCH -->
+    <div class="search-panel">
+      <div class="search-label">Ask the Knowledge Base</div>
+      <div class="search-input-wrap">
+        <textarea
+          id="question"
+          placeholder="Ask a question about Progress products..."
+          rows="2"
+        ></textarea>
+        <button class="ask-btn" id="ask-btn" onclick="askQuestion()">
+          ASK →
+        </button>
+      </div>
+    </div>
+
+    <!-- LOADING BAR -->
+    <div class="loading-bar" id="loading-bar"></div>
+
+    <!-- ANSWER PANEL -->
+    <div class="answer-panel" id="answer-panel">
+      <div class="answer-toolbar">
+        <div class="answer-title">Answer</div>
+        <div class="elapsed" id="elapsed"></div>
+      </div>
+      <div class="step-indicator" id="step-indicator"></div>
+      <div class="answer-body" id="answer-body">
+        <div class="empty-state">
+          <div class="empty-icon">🔍</div>
+          <div class="empty-title">Ready</div>
+          <div class="empty-sub">Ask a question to get started</div>
+        </div>
+      </div>
+      <div class="error-box" id="error-box"></div>
+    </div>
+
+    <!-- SOURCES -->
+    <div class="sources-panel" id="sources-panel">
+      <div class="panel-header">Sources</div>
+      <div class="sources-list" id="sources-list"></div>
+    </div>
+
+    <!-- TRACE -->
+    <div class="trace-panel" id="trace-panel">
+      <div class="trace-toggle" id="trace-toggle" onclick="toggleTrace()">
+        <div class="trace-title">Retrieval Trace</div>
+        <div class="trace-chevron" id="trace-chevron">▼</div>
+      </div>
+      <div class="trace-body" id="trace-body"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ---- CONFIG ----
+  const API_BASE = '';  // same origin — Nginx proxies to FastAPI
+
+  // ---- INIT ----
+  async function init() {
+    try {
+      // Load health stats
+      const health = await fetch(`${API_BASE}/health`).then(r => r.json());
+      document.getElementById('stat-chunks').textContent   = health.chunks.toLocaleString();
+      document.getElementById('stat-articles').textContent = health.articles.toLocaleString();
+      document.getElementById('stat-groups').textContent   = health.groups.toLocaleString();
+      document.getElementById('sys-chunks').textContent    = health.chunks.toLocaleString();
+      document.getElementById('sys-articles').textContent  = health.articles.toLocaleString();
+      document.getElementById('sys-status').textContent    = 'ONLINE';
+
+      // Load product groups
+      const groupsData = await fetch(`${API_BASE}/groups`).then(r => r.json());
+      const select = document.getElementById('product-group');
+      select.innerHTML = '';
+      groupsData.groups.forEach(g => {
+        const opt = document.createElement('option');
+        opt.value = g;
+        opt.textContent = g;
+        select.appendChild(opt);
+      });
+
+    } catch(e) {
+      document.getElementById('sys-status').textContent = 'OFFLINE';
+      document.getElementById('sys-status').style.color = 'var(--orange)';
+      console.error('Init error:', e);
+    }
+  }
+
+  // ---- RANGE SLIDERS ----
+  ['temperature','max-tokens','rerank-limit'].forEach(id => {
+    const el  = document.getElementById(id);
+    const val = document.getElementById(`${id}-val`);
+    el.addEventListener('input', () => {
+      val.textContent = id === 'temperature'
+        ? parseFloat(el.value).toFixed(1)
+        : el.value;
+    });
+  });
+
+  // ---- TEXTAREA ENTER KEY ----
+  document.getElementById('question').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      askQuestion();
+    }
+  });
+
+  // ---- TRACE TOGGLE ----
+  function toggleTrace() {
+    const body    = document.getElementById('trace-body');
+    const chevron = document.getElementById('trace-chevron');
+    const toggle  = document.getElementById('trace-toggle');
+    const isOpen  = body.classList.contains('open');
+    body.classList.toggle('open', !isOpen);
+    chevron.classList.toggle('open', !isOpen);
+    toggle.classList.toggle('open', !isOpen);
+  }
+
+  // ---- RENDER MARKDOWN-LIKE TEXT ----
+  function renderText(text) {
+    // Code blocks
+    text = text.replace(/```[\w]*\n?([\s\S]*?)```/g,
+      '<pre>$1</pre>');
+    // Inline code
+    text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+    // Bold
+    text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    // Headers
+    text = text.replace(/^### (.*$)/gm, '<h3 style="color:var(--white);font-size:15px;margin:16px 0 8px;font-family:\'IBM Plex Sans\',sans-serif;">$1</h3>');
+    text = text.replace(/^## (.*$)/gm,  '<h2 style="color:var(--white);font-size:17px;margin:20px 0 10px;font-family:\'IBM Plex Sans\',sans-serif;">$1</h2>');
+    text = text.replace(/^# (.*$)/gm,   '<h1 style="color:var(--white);font-size:20px;margin:24px 0 12px;font-family:\'IBM Plex Sans\',sans-serif;">$1</h1>');
+    // Lists
+    text = text.replace(/^\* (.*$)/gm,  '<li style="margin-left:20px;margin-bottom:4px;">$1</li>');
+    text = text.replace(/^\- (.*$)/gm,  '<li style="margin-left:20px;margin-bottom:4px;">$1</li>');
+    text = text.replace(/^\d+\. (.*$)/gm,'<li style="margin-left:20px;margin-bottom:4px;">$1</li>');
+    // Paragraphs
+    text = text.replace(/\n\n/g, '</p><p>');
+    return '<p>' + text + '</p>';
+  }
+
+  // ---- MAIN ASK FUNCTION ----
+  async function askQuestion() {
+    const question = document.getElementById('question').value.trim();
+    if (!question) return;
+
+    const btn = document.getElementById('ask-btn');
+    btn.disabled = true;
+    btn.textContent = '...';
+
+    // Show panels
+    document.getElementById('answer-panel').classList.add('visible');
+    document.getElementById('sources-panel').classList.remove('visible');
+    document.getElementById('trace-panel').classList.remove('visible');
+    document.getElementById('loading-bar').classList.add('visible');
+    document.getElementById('error-box').classList.remove('visible');
+
+    const answerBody      = document.getElementById('answer-body');
+    const stepIndicator   = document.getElementById('step-indicator');
+    const elapsedEl       = document.getElementById('elapsed');
+
+    answerBody.innerHTML  = '';
+    stepIndicator.textContent = '⟳ Running RAG pipeline...';
+    stepIndicator.classList.add('visible');
+    elapsedEl.textContent = '';
+
+    let fullText = '';
+    const startTime = Date.now();
+
+    try {
+      const response = await fetch(`${API_BASE}/query`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          question:      question,
+          product_group: document.getElementById('product-group').value,
+          model_name:    document.getElementById('model-name').value,
+          temperature:   parseFloat(document.getElementById('temperature').value),
+          max_tokens:    parseInt(document.getElementById('max-tokens').value),
+          rerank_limit:  parseInt(document.getElementById('rerank-limit').value),
+          vector_top_k:  40,
+          bm25_k:        15
+        })
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.detail || 'Server error');
+      }
+
+      const reader  = response.body.getReader();
+      const decoder = new TextDecoder();
+      let   buffer  = '';
+
+      // Show streaming answer
+      stepIndicator.textContent = '⟳ Generating answer...';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop(); // keep incomplete line
+
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue;
+          try {
+            const data = JSON.parse(line.slice(6));
+
+            if (data.type === 'token') {
+              fullText += data.content;
+              // Add blinking cursor
+              answerBody.innerHTML = renderText(fullText) +
+                '<span class="cursor"></span>';
+              // Auto scroll
+              answerBody.scrollTop = answerBody.scrollHeight;
+            }
+
+            else if (data.type === 'sources') {
+              renderSources(data.sources);
+            }
+
+            else if (data.type === 'trace') {
+              renderTrace(data.trace);
+            }
+
+            else if (data.type === 'done') {
+              // Remove cursor, final render
+              answerBody.innerHTML = renderText(fullText);
+              stepIndicator.classList.remove('visible');
+              elapsedEl.textContent = `⏱ ${data.elapsed}s`;
+              document.getElementById('loading-bar').classList.remove('visible');
+            }
+
+            else if (data.type === 'error') {
+              throw new Error(data.content);
+            }
+
+          } catch(parseErr) {
+            // skip malformed lines
+          }
+        }
+      }
+
+    } catch(e) {
+      document.getElementById('loading-bar').classList.remove('visible');
+      stepIndicator.classList.remove('visible');
+      const errBox = document.getElementById('error-box');
+      errBox.textContent = `⚠ Error: ${e.message}`;
+      errBox.classList.add('visible');
+      console.error(e);
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'ASK →';
+  }
+
+  // ---- RENDER SOURCES ----
+  function renderSources(sources) {
+    if (!sources || sources.length === 0) return;
+    const panel = document.getElementById('sources-panel');
+    const list  = document.getElementById('sources-list');
+    list.innerHTML = '';
+    sources.forEach(s => {
+      const a = document.createElement('a');
+      a.className  = 'source-item';
+      a.href       = s.url;
+      a.target     = '_blank';
+      a.rel        = 'noopener';
+      a.innerHTML  = `
+        <span class="source-id">${s.article_id}</span>
+        <span class="source-title">${s.title}</span>
+        <span class="source-arrow">↗</span>
+      `;
+      list.appendChild(a);
+    });
+    panel.classList.add('visible');
+  }
+
+  // ---- RENDER TRACE ----
+  function renderTrace(traceLines) {
+    if (!traceLines || traceLines.length === 0) return;
+    const panel = document.getElementById('trace-panel');
+    const body  = document.getElementById('trace-body');
+    body.innerHTML = traceLines.map(line =>
+      `<div class="trace-line ${line.startsWith('Query') || line.startsWith('Article') ? 'highlight' : ''}">${line}</div>`
+    ).join('');
+    panel.classList.add('visible');
+  }
+
+  // ---- START ----
+  init();
+</script>
+<footer class="site-footer">
+  <div class="footer-left">
+    <span class="footer-copy">&#169; 2026 Progress Software Corporation. All Rights Reserved.</span>
+  </div>
+  <div class="footer-links">
+    <a href="https://www.progress.com/" target="_blank" rel="noopener">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      Progress.com
+    </a>
+    <div class="footer-sep"></div>
+    <a href="https://community.progress.com/s/" target="_blank" rel="noopener">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Community
+    </a>
+    <div class="footer-sep"></div>
+    <a href="https://www.progress.com/support" target="_blank" rel="noopener">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Support
+    </a>
+  </div>
+</footer>
+</body>
+</html>
